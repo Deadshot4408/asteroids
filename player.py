@@ -1,3 +1,4 @@
+import sys
 import pygame
 from constants import *
 from circleshape import CircleShape
@@ -49,3 +50,18 @@ class Player(CircleShape):
     def move(self, dt):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
         self.position += forward * PLAYER_SPEED * dt
+
+    def respawn_ship(self):
+        self.position.x, self.position.y = SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2
+        self.velocity = (0, 0)
+
+    @staticmethod
+    def game_over(screen):
+        font = pygame.font.SysFont(None, 72)
+        game_over_text = font.render("Game Over!", True, (255, 0, 0))
+        screen.blit(game_over_text, (SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2))
+        pygame.display.flip()
+        pygame.time.delay(2000) # Wait for 2 seconds before resetting or quiting
+        sys.exit()
+
+

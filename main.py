@@ -6,10 +6,11 @@ from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
 
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
 
     updatable = pygame.sprite.Group()
@@ -27,6 +28,8 @@ def main():
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
     dt = 0
+    score = 0
+    lives = 3
 
     while True:
         for event in pygame.event.get():
@@ -38,15 +41,27 @@ def main():
 
         for asteroid in asteroids:
             if asteroid.collides_with(player):
-                print("Game over!")
-                sys.exit()
+                lives -= 1
+                if lives > 0:
+                    player.respawn_ship()
+                elif lives <= 0:
+                    player.game_over(screen)
 
             for shot in shots:
                 if asteroid.collides_with(shot):
                     shot.kill()
                     asteroid.split()
+                    score += 10
 
         screen.fill("black")
+
+        font = pygame.font.SysFont(None, 36)
+        score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))
+
+        font = pygame.font.SysFont(None, 36)
+        lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
+        screen.blit(lives_text, (10, 40))
 
         for obj in drawable:
             obj.draw(screen)
@@ -59,3 +74,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
